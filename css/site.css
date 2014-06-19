@@ -1,0 +1,533 @@
+/*@import url(vendor/bootstrap.css);*/
+
+body {
+  background: #fff;
+
+  margin: 0;
+  overflow: hidden;
+  font-family: "Helvetica Neue", Helvetica, arial, sans-serif;
+
+  min-width: 960px !important;
+}
+
+a, a:hover, a:active {
+  color: #fd0011;
+  text-decoration: none !important;
+}
+
+* {
+  font-family: inherit;
+}
+
+header, main, #intro {
+  min-width: 860px;
+}
+
+#intro {
+  position: absolute;
+}
+
+#intro, #intro * {
+       box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+#loading {
+  z-index: 999;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  color: #eee;
+  font-size: 24px;
+  background: #111;
+  font-weight: bold;
+  padding: 10px;
+
+  text-align: center;
+  width: 10em;
+  margin-left: -5em;
+
+  -webkit-transition: opacity .2s;
+  opacity: 0.0;
+}
+
+#loading.visible {
+  opacity: 1.0;
+}
+
+#map-root {
+  position: absolute;
+  left: -256px;
+  top: -256px;
+  right: -256px;
+  bottom: -256px;
+}
+
+/*#map-root {
+  position: absolute;
+  left: -512px;
+  top: -512px;
+  right: -512px;
+  bottom: -512px;
+}
+*/
+  #map-root .threed {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+#map,
+.no-select {
+          user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+       -o-user-select: none;
+}
+
+.navbar {
+  color: #fff;
+  background: #000;
+  margin-bottom: 0 !important;
+  position: absolute;
+  width: 100%;
+  z-index: 999;
+}
+
+  .navbar .navbar-inner {
+    background: transparent;
+    border: 0;
+  }
+
+  .navbar .brand,
+  .navbar .nav > li > a {
+    color: inherit;
+    text-shadow: none;
+  }
+
+  .navbar .brand {
+    font-size: 34px;
+    line-height: 38px; /* baseline alignment with links */
+    position: relative;
+    padding-bottom: 0;
+  }
+
+  .navbar .brand #stamen,
+  .navbar .brand b {
+    font-weight: 500;
+  }
+
+  .navbar .brand #here {
+    display: inline-block;
+    color: transparent;
+    width: 66px;
+    height: 54px;
+
+    background-image: url(../images/here-logo.png);
+    background-position: bottom right;
+    background-repeat: no-repeat;
+  }
+
+  .navbar .brand #hearts {
+    color: #fd0011;
+  }
+
+  .navbar .nav {
+    margin-top: 16px; /* baseline alignment with .brand */
+    margin-left: 5px;
+  }
+
+    .navbar .nav > li {
+      color: #666;
+      font-size: 18px;
+    }
+
+    .navbar .nav > li > a {
+      color: #fff;
+      display: inline-block;
+      padding-right: 5px;
+      padding-left: 9px;
+    }
+
+    .navbar .nav > li:last-child > a {
+      padding-left: 10px;
+    }
+
+    .navbar .nav > li > a:focus,
+    .navbar .nav > li > a:hover {
+      color: #fd0011;
+      text-decoration: underline;
+    }
+
+    .navbar #other {
+      margin-left: 12px;
+    }
+
+    .navbar #other > li > a {
+      color: #ccc;
+      padding-left: 16px;
+    }
+
+    .navbar .nav > li > a.active,
+    body.intro a#about {
+      color: #fd0011;
+    }
+
+    .navbar .nav .divider-vertical {
+      border-right: none;
+      border-left: 1px solid #999;
+      height: 16px;
+      position: relative;
+      top: 12px;
+    }
+
+#map,
+#intro,
+svg.map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#intro {
+  position: absolute;
+  height: auto;
+  top: 65px; /* XXX: about the height of the header */
+  bottom: 0;
+  z-index: 100;
+
+  display: none;
+
+  font-size: 18px;
+  line-height: 24px;
+  color: #ccc;
+
+  padding: 30px;
+
+  background-image: url(../images/intro/roosevelt_island.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+  #intro #content {
+    width: 100%;
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  #intro h2 {
+    font-size: 50px;
+    line-height: 56px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: -.04em;
+    margin: 0;
+  }
+
+  #intro h2 a {
+    color: inherit;
+  }
+
+  #intro h3 {
+    margin: 0;
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+  }
+
+    #intro h3 a,
+    #intro #sharing a {
+      text-decoration: underline !important;
+    }
+
+  #intro .overlay,
+  #intro .post {
+    padding: 6px 12px 8px;
+    background: rgba(0,0,0,.6);
+         box-sizing: border-box;
+    -moz-box-sizing: border-box;
+  }
+
+  #intro #left {
+    position: absolute;
+    padding: 0;
+    width: 60%;
+  }
+
+  #intro #posts {
+    margin: 15px 0;
+  }
+
+  #intro #posts .post {
+  }
+
+  #intro #posts .post:last-child {
+    margin-right: 0;
+  }
+
+  #intro #sharing {
+  }
+
+  #intro #right {
+    margin-left: 60%;
+    padding-left: 40px;
+  }
+
+#big-city-links a.city {
+  display: block;
+  height: 100px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  padding: 10px;
+  line-height: 136px;
+  overflow: hidden;
+
+  font-size: 16px;
+  letter-spacing: .1em;
+
+  color: #fff;
+  text-transform: uppercase;
+  text-shadow: 0 0 3px rgba(0,0,0,.6);
+
+  background-color: #000;
+  background-position: center center;
+  background-size: cover;
+}
+
+  #big-city-links a.city:hover {
+    border-color: #fd0011;
+  }
+
+  #big-city-links #big-sf { background-image: url(../images/intro/sf_goldengatebridge.jpg); }
+  #big-city-links #big-berlin { background-image: url(../images/intro/berlin.jpg); }
+  #big-city-links #big-london { background-image: url(../images/intro/london_towerbridge.jpg); }
+  #big-city-links #big-nyc { background-image: url(../images/intro/nyc_centralpark_mesh.jpg); }
+
+body.intro #intro {
+  display: block;
+}
+
+body.intro .map-only {
+  display: none !important;
+}
+
+#map > * {
+  position: absolute;
+}
+
+  #map .controls {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    right: 20px;
+  }
+
+  #map .controls button {
+    border: none;
+    color: #000;
+    background: #fff;
+    display: inline-block;
+         box-sizing: content-box;
+    -moz-box-sizing: content-box;
+
+    font-size: 32px;
+    line-height: 26px;
+    height: 22px;
+    padding: 2px 0 12px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+    #map .controls button.zoom {
+      width: 36px;
+    }
+
+    #map .controls button[disabled],
+    #map .controls button.disabled {
+      background: #ccc;
+    }
+
+  #map .controls .actions button {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  #styles {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+    #styles .style {
+      display: block;
+      float: left;
+      margin-left: 25px;
+      font-size: 20px;
+      line-height: 26px;
+      color: #000;
+      border: #fff 1px solid;
+      width: 100px;
+    }
+
+    #styles .style .options {
+      margin-top: -40px;
+    }
+
+    #styles .style.active {
+      color: #fff;
+      border-color: #fd0011;
+      border-bottom: none;
+    }
+
+      #styles .style a,
+      #styles .style a > *,
+      #styles .style .chip {
+        color: inherit !important;
+      }
+
+      #styles .style .chip {
+        display: block;
+        font-size: 13px;
+        text-transform: uppercase;
+        font-weight: 500;
+        margin: 0;
+        width: 100%;
+        height: 36px;
+             box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        padding: 6px 0 10px;
+        background: #fff;
+        text-align: center;
+
+        /*
+        -webkit-transition-property: width, margin-left;
+        -webkit-transition-duration: .2s;
+        */
+      }
+
+      #styles .style .action {
+        text-align: left;
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        padding: 0;
+      }
+
+      #styles .style .action .title {
+        cursor: pointer;
+             box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        padding: 5px 0 10px;
+        line-height: inherit;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 100%;
+        background: #fd0011;
+        text-align: center;
+        z-index: 100;
+      }
+
+      #styles .style .action.active {
+        width: 500px;
+        margin-left: -400px;
+        overflow: visible;
+        z-index: 200;
+      }
+
+      #styles .style .action .extras {
+        position: relative;
+        text-transform: none;
+        display: block;
+        margin: 0 100px 0 100px;
+      }
+
+      #styles .style .action.active .extras {
+        display: block;
+      }
+
+      #styles .style .action #share-url,
+      #styles .style .action #embed-text {
+        position: absolute;
+        display: block;
+             box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        width: 96%;
+        border-radius: 0 !important;
+        margin: 8px 0 0 0;
+        padding: 4px;
+        box-shadow: none !important;
+      }
+
+      #styles .style .action #embed-text {
+        height: auto !important;
+        border: 6px solid #fd0011;
+        border-top: none;
+      }
+
+      #styles .style .action a.x {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 30px;
+        line-height: 32px;
+        width: 100px;
+        text-align: center;
+      }
+
+      #styles .style a > .chip {
+      }
+
+      #styles .style.active .chip {
+        background: #fd0011;
+      }
+
+      #styles .style .preview {
+        background: none;
+        height: 100px;
+      }
+
+        #styles .style .preview img {
+          display: block;
+          margin: 0;
+        }
+
+      #styles .style.active .preview {
+        visibility: hidden;
+      }
+
+      #styles .style .chip + .chip {
+        margin-top: 1px;
+      }
+
+      #styles .style > a {
+        display: block;
+      }
+
+      #styles .style > a > label {
+        color: #000;
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        display: block;
+        text-align: center;
+        padding: 10px 0;
+        margin: 0;
+      }
+
+svg.compass {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+}
+
+svg.compass text {
+  cursor: pointer;
+}

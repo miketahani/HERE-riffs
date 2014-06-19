@@ -1,0 +1,173 @@
+{
+  "map": {
+    "zoomRange": [15, 18],
+    "zoom": 18
+  },
+
+  "tiles": {
+    "prefix": "http://{S}tiles.here.stamen.com",
+    "hosts": ["a.", "b.", "c.", "d."]
+  },
+
+  "cities": [
+
+    {
+      "id":   "sf",
+      "name": "San Francisco",
+      "center": [-122.4121, 37.7806],
+      "bounds": [
+        [-122.530, 37.700],
+        [-122.342, 37.835]
+      ],
+      "styles": [
+        "pinstripe",
+        "3d-photo",
+        "3d-mesh",
+        "3d-heights",
+        "3d-heights-wireframe",
+        "footprints",
+        "footprints-wireframe",
+        "3d-watercolor"
+      ]
+    },
+
+    {
+      "id":   "berlin",
+      "name": "Berlin",
+      "center": [13.3899, 52.4992],
+      "styles": [
+        "pinstripe",
+        "3d-photo",
+        "3d-mesh",
+        "3d-heights",
+        "3d-heights-wireframe",
+        "3d-watercolor"
+      ]
+    },
+
+    {
+      "id":   "london",
+      "name": "London",
+      "center": [-0.1332, 51.4961],
+      "styles": [
+        "pinstripe",
+        "3d-photo",
+        "3d-mesh",
+        "3d-heights",
+        "3d-heights-wireframe",
+        "3d-watercolor"
+      ]
+    },
+
+    {
+      "id":   "nyc",
+      "name": "New York",
+      "center": [-73.9910, 40.7176],
+      "styles": [
+        "pinstripe",
+        "3d-photo",
+        "3d-mesh",
+        "3d-heights",
+        "3d-heights-wireframe",
+        "3d-watercolor"
+      ]
+    }
+
+  ],
+
+  "styles": {
+
+    "pinstripe": {
+      "name": "Pinstripe",
+      "zoomRange": [15,17],
+      "zoom": 17,
+
+      "type": "2d",
+      "url": "{prefix}/pinstripe/{Z}/{X}/{Y}.png"
+    },
+
+    "3d-pinstripe": {
+      "name": "3D Pinstripe",
+
+      "type": "3d",
+      "url": "{prefix}/nokia3d/{Z}/{X}/{Y}.json",
+      "texture": "{prefix}/pinstripe/{Z}/{X}/{Y}.png",
+      "normalize": true
+    },
+
+    "3d-mesh": {
+      "name": "Mesh 1",
+      "preview": "images/preview-3d-mesh.jpg",
+      
+      "type": "3d",
+      "url": "{prefix}/nokia3d/{Z}/{X}/{Y}.json",
+      "wireframe": true
+    },
+
+    "3d-photo": {
+      "name": "Photo",
+      "preview": "images/preview-3d-photo.jpg",
+
+      "type": "3d",
+      "url": "{prefix}/nokia3d/{Z}/{X}/{Y}.json"
+    },
+
+    "3d-heights": {
+      "name": "Height",
+      "preview": "images/preview-3d-blocks.jpg",
+      "heightColors": true,
+      "zoomRange": [16,18],
+      "zoom": 18,
+
+      "type": "3d",
+      "url": "{prefix}/nokia3d/{Z}/{X}/{Y}.json"
+    },
+
+    "3d-heights-wireframe": {
+      "name": "Mesh 2",
+      "preview": "images/preview-3d-blocks-mesh.jpg",
+      "heightColors": true,
+      "wireframe": true,
+      "zoomRange": [16,18],
+      "zoom": 18,
+
+      "type": "3d",
+      "url": "{prefix}/nokia3d/{Z}/{X}/{Y}.json"
+    },
+
+    "3d-watercolor": {
+      "name": "Watercolor",
+      "preview": "images/preview-3d-watercolor.jpg",
+
+      "type": "3d",
+      "url": "{prefix}/nokia3d/{Z}/{X}/{Y}.json",
+      "texture": {
+        "url": "http://tile.stamen.com/watercolor/{Z}/{X}/{Y}.jpg",
+        "hosts": ["a.", "b.", "c.", "d.", ""]
+      },
+      "normalize": true
+    },
+
+    "footprints": {
+      "name": "Footprint",
+      "preview": "images/preview-footprints.jpg",
+      "zoomRange": [16,18],
+      "zoom": 18,
+
+      "type": "footprints",
+      "url": "{prefix}/footprints/{Z}/{X}/{Y}.geojson"
+    },
+
+    "footprints-wireframe": {
+      "name": "Mesh 3",
+      "preview": "images/preview-footprints-wireframe.png",
+      "zoomRange": [16,18],
+      "zoom": 18,
+
+      "type": "footprints",
+      "url": "{prefix}/footprints/{Z}/{X}/{Y}.geojson",
+      "wireframe": true
+    }
+
+  }
+}

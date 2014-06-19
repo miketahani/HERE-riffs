@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stamen &lt;3 here</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+      @import url(css/site.css);
+    </style>
+    <script type="text/javascript" src="js/vendor/polymaps.js"></script>
+    <script type="text/javascript" src="js/vendor/d3.v3.min.js"></script>
+    <script type="text/javascript" src="js/vendor/three.min.js"></script>
+    <script type="text/javascript" src="js/vendor/OBJLoader.js"></script>
+    <script type="text/javascript" src="js/vendor/AnaglyphEffect.js"></script>
+    <script type="text/javascript" src="js/site.anaglyph-parallax.js"></script>
+  </head>
+  <body>
+    <!--
+    <header class="navbar no-select">
+      <div class="navbar-inner">
+        <a class="brand" href="./">
+          <span id="stamen">Stamen</span> <b id="hearts">&lt;3</b> <span id="here">here</span>
+        </a>
+        <ul id="other" class="nav pull-right">
+        </ul>
+        <ul id="cities" class="nav pull-right">
+        </ul>
+      </div>
+    </header>
+
+    <section id="intro">
+      <div id="content">
+        <div id="left" class="container-fluid">
+          <h2 class="overlay">An experimental service using WebGL and 3D data from <a href="http://here.com">here.com</a></h2>
+          <section id="posts" class="row-fluid">
+            <div class="post span6">
+              <h3><a href="http://content.stamen.com/here.stamen.com">Announcing Nokia Maps!</a></h3>
+              <p>Stamen has been working with Nokia data for a few months now,
+              and it&rsquo;s time to start being public about that...</p>
+            </div>
+            <div class="post span6">
+              <h3><a href="http://content.stamen.com/here.stamen.com_technical">Read about the tech side</a></h3>
+              <p>As you can see, we ended up building a bit of a glass-bottomed boat...
+              WebGL, OBJ, 3D, etc.</p>
+            </div>
+          </section>
+          <p id="sharing" class="overlay">
+            It&rsquo;s easy to embed or share these maps on your own projects.
+            If you build something with this data, please get in touch!
+            Tweet a link to <a href="http://twitter.com/stamen">@stamen</a> or email info&#64;stamen.com.
+          </p>
+        </div>
+        <div id="right">
+          <div id="big-city-links">
+            <a id="big-sf" class="city" href="?city=sf&amp;style=3d-heights">San Francisco</a>
+            <a id="big-berlin" class="city" href="?city=berlin&amp;style=3d-photo">Berlin</a>
+            <a id="big-london" class="city" href="?city=london&amp;style=3d-mesh">London</a>
+            <a id="big-nyc" class="city" href="?city=nyc&amp;style=3d-heights-wireframe">New York</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    -->
+
+    <main id="map" class="map-only">
+      <div id="map-root">
+      </div>
+      <!--
+      <div class="controls no-select">
+        <div class="actions">
+          <button class="zoom" data-action="zoom-in">+</button>
+          <button class="zoom" data-action="zoom-out">&minus;</button>
+        </div>
+        <div id="styles">
+        </div>
+      -->
+      </div>
+    </main>
+
+    <div id="widgets" style="display: none;">
+      <input id="share-url" type="text">
+      <textarea id="embed-text" rows="5">&lt;iframe src="{url}" width="100%" height="500"&gt;&lt;/iframe&gt;</textarea>
+    </div>
+
+    <script>
+
+      var query = stokia.query.parse(location.search),
+          map, config,
+          state = {
+            city: query.city,
+            style: query.style
+          },
+          body = d3.select("body")
+            .classed("intro", !query.city);
+
+      d3.json("config.json", function(error, data) {
+        config = data;
+
+        // var links = setupCityLinks();
+
+        if (query.city) {
+
+          // only check for WebGL if a city was requested
+          if (!stokia.compat.check()) {
+            alert("Sorry, your browser doesn't support WebGL.");
+            throw "No web GL support, bailing.";
+          }
+
+          map = setupMap();
+
+          links.select("a")
+            .classed("active", function(d) {
+              return d.id === state.city;
+            });
+
+        } else {
+          // setupIntro();
+        }
+      });
+
+      function setupCityLinks() {
+
+        // create city list items
+        var links = d3.select("#cities")
+          .selectAll(".city")
+            .data(config.cities)
+            .enter()
+            .insert("li", "li.city")
+              .attr("class", "city");
+
+        // and links
+        links.append("a")
+          .attr("href", function(d) {
+            var style = d.styles.indexOf(state.style) > -1
+              ? state.style
+              : d.styles[0];
+            return "?" + stokia.query.format({city: d.id, style: style});
+          })
+          .text(function(d) {
+            return d.name;
+          });
+
+        // and add slashes to each one *except the last*
+        links.filter(function(d, i) {
+            return i < config.cities.length - 1;
+          })
+          .append("span")
+            .text(" /");
+
+        return links;
+      }
+
+      function setupMap() {
+
+        // update stokia.layer presets from the config
+        if (config.tiles) {
+          stokia.layer.prefix = config.tiles.prefix || "";
+          stokia.layer.hosts = config.tiles.hosts || [];
+        }
+
+        // check valid city and style
+
+        // FIXME Mike's laptop adds slashes; remove me?
+        state.style = state.style.replace("/", "");
+        // make a cities dictionary keyed on id
+        var citiesById = stokia.util.unique(config.cities, "id"),
+            // get the selected city by id
+            city = citiesById[state.city],
+            // and the selected style (config.styles is a dict)
+            style = config.styles[state.style];
+
+        // if city is undefined, it doesn't exist in the config
+        if (!city) {
+          alert("Sorry, we don't have that city.");
+          // throw "Sorry, we don't have that city.";
+          // redirect to the first city in the list
+          if (config.cities && config.cities.length) {
+            location = "?" + stokia.query.format({
+              city: config.cities[0].id,
+              style: config.cities[0].styles[0]
+            });
+          } else {
+            throw "No cities found in config; giving up.";
+          }
+
+        // if the style doesn't exist, *or* the city doesn't have that style...
+        } else if (!style || city.styles.indexOf(state.style) === -1) {
+          alert("Sorry, we don't have that style.");
+          // throw "Sorry, we don't have that style.";
+          // redirect to the city's first style
+          if (city.styles && city.styles.length) {
+            location = "?" + stokia.query.format({
+              city: city.id,
+              style: city.styles[0]
+            });
+          } else {
+            throw 'No styles in city "' + city.id + '"; giving up.';
+          }
+        }
+
+        // create the map
+        map = stokia.map(config)
+          .container("#map-root")
+          .city(city)
+          .style(style) // TODO: wrap in try/catch, alert()
+          .zoom(style.zoom || city.zoom || config.map.zoom)
+          .controls("#map .controls");
+
+        // add interaction
+        map
+          // .add(stokia.ui.compass())
+          .add(org.polymaps.drag())
+          .add(org.polymaps.dblclick())
+          .add(stokia.hash());
+
+        var loading = d3.select("#map-root").append("div")
+          .attr("id", "loading")
+          .attr("class", "no-select");
+        map.on("loading", function(e) {
+          loading.classed("visible", true)
+            .text("Loading tiles... " + e.percent + "%");
+        });
+        map.on("complete", function(e) {
+          loading.classed("visible", false)
+            .text("Loading tiles... 100%");
+        });
+
+        /*
+
+        // make style links
+        var validStyles = city.styles.map(function(styleId) {
+          return config.styles[styleId];
+        })
+        // XXX and filter out non-existent styles
+        .filter(function(style) {
+          return !!style;
+        });
+
+        // create a div for each style
+        var div = d3.select("#styles")
+          .selectAll(".style")
+          .data(validStyles)
+          .enter()
+          .append("div")
+            .attr("class", "style")
+            .classed("active", function(d) {
+              return d === style;
+            });
+
+        // and a link in each div
+        function styleHref(d) {
+          return "?" + stokia.query.format({city: state.city, style: d.id});
+        }
+
+        // add a button for each
+        div.append("a")
+          .attr("class", "hashy chip")
+          .attr("href", styleHref)
+          .text(function(d) { return d.name || d.id; });
+
+        // and a little preview window
+        div.append("a")
+          .attr("href", styleHref)
+          .attr("class", "preview hashy")
+          .append("img")
+            .attr("src", function(d) {
+              return d.preview || "images/preview-" + d.id + ".png";
+            });
+
+        var shareField = d3.select("#share-url"),
+              // .on("click", selectField)
+            embedField = d3.select("#embed-text")
+              // save the template text for later
+              .datum(function() { return this.textContent; })
+              // .on("click", selectField)
+              .remove();
+
+        // only append action buttons onto the active one
+        var active = div.filter(".active"),
+            actions = active.append("div")
+              .attr("class", "options")
+              .selectAll(".action")
+              .data([
+                {
+                  name: "embed",
+                  show: function showEmbed(selection) {
+                    selection.select(".content").text("")
+                      .each(function() {
+                        this.appendChild(embedField.node());
+                      });
+                    updateEmbedText(location.href);
+                  },
+                  hide: function hideEmbed(selection) {
+                    selection.select(".content").text("");
+                  }
+                },
+                {
+                  name: "share",
+                  show: function showShare(selection) {
+                    selection.select(".content").text("")
+                      .each(function() {
+                        this.appendChild(shareField.node());
+                      });
+                    updateShareText(location.href);
+                  },
+                  hide: function hideShare(selection) {
+                    selection.select(".content").text("");
+                  }
+                }
+              ])
+              .enter()
+              .append("div")
+                .attr("class", "chip action")
+                .each(function(action) {
+                  action.root = this;
+                });
+
+        actions.append("a")
+          .attr("class", "title")
+          .text(function(action) { return action.name; })
+          .on("click", function(action) {
+            // deactivate currently active ones
+            actions.each(function(d) {
+              if (d !== action && d.active) {
+                d3.select(d.root)
+                  .classed("active", d.active = false)
+                  .call(d.hide);
+              }
+            });
+            var active = action.active = !action.active;
+            d3.select(action.root)
+              .classed("active", action.active)
+              .call(active ? action.show : action.hide);
+          });
+
+        var extras = actions.append("div")
+          .attr("class", "extras");
+        extras.append("div")
+          .attr("class", "content");
+
+        actions.append("a")
+          .attr("class", "x")
+          .html("&times;")
+          .on("click", function(action) {
+            action.active = false;
+            d3.select(action.root)
+              .classed("active", false)
+              .call(action.hide);
+
+            d3.event.preventDefault();
+            d3.event.stopImmediatePropagation();
+          });
+
+        */
+
+        // and update all of the "hashy" links to include the new location.hash
+        // whenever it changes
+        var hashy = d3.selectAll("a.hashy"),
+            timeout;
+        function onhashchange() {
+          clearTimeout(timeout);
+          timeout = setTimeout(function() {
+            var hash = location.hash;
+            hashy.attr("href", function() {
+              var bits = this.href.split("#");
+              bits[1] = hash;
+              return bits.join("");
+            });
+
+            var url = location.href;
+            updateEmbedText(url);
+            updateShareText(url);
+          });
+        }
+
+        window.addEventListener("hashchange", onhashchange);
+        onhashchange();
+
+        function updateEmbedText(url) {
+          url = url.replace(/\/[^\/]*\?/, "/embed?");
+          embedField.text(embedField.datum().replace("{url}", url));
+          if (embedField.node().parentNode) embedField.each(selectField);
+        }
+
+        function updateShareText(url) {
+          shareField.attr("value", url);
+          if (shareField.node().parentNode) shareField.each(selectField);
+        }
+
+        function selectField() {
+          this.focus();
+          this.select();
+        }
+      }
+
+      function setupIntro() {
+        var intro = d3.select("#intro"),
+            header = d3.select("header");
+        body.classed("city", false);
+
+        function resize() {
+          var y = header.property("offsetHeight");
+          intro.style("top", y + "px");
+        }
+
+        resize();
+        window.addEventListener("resize", resize);
+      }
+
+    </script>
+
+  </body>
+</html>
