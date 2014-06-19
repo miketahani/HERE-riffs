@@ -1,6 +1,6 @@
 ![](riffs.png "riffs")
 
-#### [Live Demo](http://miketahani.github.com/stamen-nokia/index.html?city=nyc&style=3d-photo#18/40.70568/-74.00958)
+#### [Live Demo](http://miketahani.github.com/HERE-riffs/index.html?city=nyc&style=3d-photo#18/40.70568/-74.00958)
 
 During my time at Stamen, I [worked](http://content.stamen.com/here.stamen.com_technical) on the [here.stamen.com](http://here.stamen.com) 3D slippy-map project hoping that people would use it for inspiration and use the code in their own projects. In the spirit of openness, our fearless leader Eric Rodenbeck [wrote](http://content.stamen.com/here.stamen.com)
 
@@ -16,8 +16,8 @@ This is an ongoing effort to minimize the code down to barebones essentials and 
 
 ### Riffs (so far)
 
-1. [Anaglyph-Parallax](http://miketahani.github.com/stamen-nokia/anaglyph-parallax.html?city=nyc&style=3d-photo#18/40.70568/-74.00958)
-2. [Snap-Camera](http://miketahani.github.com/stamen-nokia/snap-camera.html?city=nyc&style=3d-photo#18/40.70568/-74.00958)
+1. [Anaglyph-Parallax](http://miketahani.github.com/HERE-riffs/anaglyph-parallax.html?city=nyc&style=3d-photo#18/40.70568/-74.00958)
+2. [Snap-Camera](http://miketahani.github.com/HERE-riffs/snap-camera.html?city=nyc&style=3d-photo#18/40.70568/-74.00958)
 
 ### Use
 
